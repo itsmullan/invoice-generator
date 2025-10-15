@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator - NimbusKit</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="messageContainer"></div>
+
+    <div class="invoice-container">
+        <div class="invoice-form">
+            <form id="invoiceForm">
+                <div class="logo-section">
+                    <div class="logo-upload" id="logoUploadArea">
+                        <input type="file" id="logoFile" accept="image/*" class="logo-file-input" hidden>
+                        <label for="logoFile" class="logo-upload-label">
+                            <span id="logoPlaceholder">+ Add Your Logo</span>
+                            <img id="logoPreview" class="logo-preview hidden" alt="Logo preview">
+                        </label>
+                        <button type="button" class="remove-logo-btn hidden" id="removeLogoBtn">×</button>
+                    </div>
+                    
+                    <div class="invoice-header-right">
+                        <h1 class="invoice-title">INVOICE</h1>
+                        <div class="invoice-number-group">
+                            <span class="hash">#</span>
+                            <input type="text" id="invoiceNumber" class="invoice-number-input" value="1" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="from-section">
+                    <label class="field-label">Who is this from?</label>
+                    <textarea id="fromDetails" class="field-input" rows="4" placeholder="Your Company Name&#10;Address Line 1&#10;City, State ZIP" required></textarea>
+                </div>
+
+                <div class="to-ship-section">
+                    <div class="field-group">
+                        <label class="field-label">Bill To</label>
+                        <textarea id="toDetails" class="field-input" rows="4" placeholder="Client Name&#10;Address Line 1&#10;City, State ZIP" required></textarea>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Ship To</label>
+                        <textarea id="shipTo" class="field-input" rows="4" placeholder="(optional)"></textarea>
+                    </div>
+                </div>
+
+                <div class="invoice-details">
+                    <div class="detail-row">
+                        <label class="detail-label">Date</label>
+                        <input type="date" id="invoiceDate" class="detail-input" required>
+                    </div>
+                    <div class="detail-row">
+                        <label class="detail-label">Payment Terms</label>
+                        <input type="text" id="paymentTerms" class="detail-input" placeholder="Net 30">
+                    </div>
+                    <div class="detail-row">
+                        <label class="detail-label">Due Date</label>
+                        <input type="date" id="dueDate" class="detail-input">
+                    </div>
+                    <div class="detail-row">
+                        <label class="detail-label">PO Number</label>
+                        <input type="text" id="poNumber" class="detail-input" placeholder="(optional)">
+                    </div>
+                </div>
+
+                <div class="items-section">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th class="col-item">Item</th>
+                                <th class="col-quantity">Quantity</th>
+                                <th class="col-rate">Rate</th>
+                                <th class="col-amount">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody"></tbody>
+                    </table>
+                    <button type="button" class="add-line-btn" id="addLineItem">+ Line Item</button>
+                </div>
+
+                <div class="bottom-section">
+                    <div class="notes-terms">
+                        <div class="notes-group">
+                            <label class="field-label">Notes</label>
+                            <textarea id="notes" class="field-input" rows="3" placeholder="Notes - any relevant information not already covered"></textarea>
+                        </div>
+                        <div class="terms-group">
+                            <label class="field-label">Terms</label>
+                            <textarea id="terms" class="field-input" rows="3" placeholder="Terms and conditions - late fees, payment methods, delivery schedule"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="totals-section">
+                        <div class="total-row">
+                            <span class="total-label">Subtotal</span>
+                            <span class="total-value" id="subtotalValue">$0.00</span>
+                        </div>
+                        <div class="total-row tax-row">
+                            <div class="tax-input-group">
+                                <span class="total-label">Tax</span>
+                                <input type="number" id="taxValue" class="tax-input" placeholder="0" step="0.01" min="0">
+                                <select id="taxType" class="tax-type">
+                                    <option value="%">%</option>
+                                    <option value="flat" id="taxFlatOption">$</option>
+                                </select>
+                            </div>
+                            <span class="total-value" id="taxAmount">$0.00</span>
+                        </div>
+                        <div class="total-row discount-row hidden" id="discountRow">
+                            <span class="total-label">Discount</span>
+                            <span class="total-value" id="discountAmount">$0.00</span>
+                        </div>
+                        <div class="total-row shipping-row hidden" id="shippingRow">
+                            <span class="total-label">Shipping</span>
+                            <span class="total-value" id="shippingAmount">$0.00</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="button" class="action-btn" id="addDiscount">+ Discount</button>
+                            <button type="button" class="action-btn" id="addShipping">+ Shipping</button>
+                        </div>
+                        <div class="total-row total-main">
+                            <span class="total-label">Total</span>
+                            <span class="total-value" id="totalValue">$0.00</span>
+                        </div>
+                        <div class="total-row amount-paid-row">
+                            <div class="amount-paid-group">
+                                <span class="total-label">Amount Paid</span>
+                                <div class="amount-paid-input-wrapper">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" id="amountPaid" class="amount-paid-input" placeholder="0" step="0.01" min="0">
+                                </div>
+                            </div>
+                            <span class="total-value"></span>
+                        </div>
+                        <div class="total-row balance-row">
+                            <span class="total-label">Balance Due</span>
+                            <span class="total-value" id="balanceValue">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="sidebar">
+            <button type="button" class="create-btn" id="generateBtn">Create</button>
+            
+            <div class="sidebar-section">
+                <label class="sidebar-label">Theme</label>
+                <select class="sidebar-select">
+                    <option>Classic</option>
+                    <option>Modern</option>
+                    <option>Minimal</option>
+                </select>
+            </div>
+
+            <div class="sidebar-section">
+                <label class="sidebar-label">Currency</label>
+                <select id="currency" class="sidebar-select">
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                    <option value="INR">INR (₹)</option>
+                    <option value="CAD">CAD ($)</option>
+                    <option value="AUD">AUD ($)</option>
+                </select>
+            </div>
+
+            <button type="button" class="save-default-btn">Save Default</button>
+
+            <div class="sidebar-section history-section">
+                <label class="sidebar-label">Recent Invoices</label>
+                <div id="historyList" class="history-list">
+                    <p class="empty-history">No invoices yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="discountModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Add Discount</h3>
+            <div class="modal-field">
+                <label>Discount Value</label>
+                <input type="number" id="discountValue" placeholder="0" step="0.01" min="0">
+            </div>
+            <div class="modal-field">
+                <label>Type</label>
+                <select id="discountType">
+                    <option value="%">Percentage (%)</option>
+                    <option value="flat">Flat Amount ($)</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn cancel-btn" onclick="closeDiscountModal()">Cancel</button>
+                <button type="button" class="modal-btn apply-btn" onclick="applyDiscount()">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="shippingModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Add Shipping</h3>
+            <div class="modal-field">
+                <label>Shipping Cost</label>
+                <input type="number" id="shippingValue" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn cancel-btn" onclick="closeShippingModal()">Cancel</button>
+                <button type="button" class="modal-btn apply-btn" onclick="applyShipping()">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
